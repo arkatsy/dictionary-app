@@ -1,6 +1,6 @@
-import { createContext, useState } from "react";
+import { createContext, useRef, useState } from "react";
 import { useDebouncedEffect } from "./use-debounced-effect";
-import { cache } from "./lib";
+import LocalStorageCache from "./local-storage-cache";
 
 type DictionaryContextType = {
   word: string;
@@ -15,22 +15,28 @@ type DictionaryProviderProps = {
   children: React.ReactNode;
   initialWord?: string | null;
   delay?: number;
+  cacheLimit?: number;
+  cacheKey?: string;
 };
 
-export const DictionaryContext = createContext<DictionaryContextType | null>(
-  null,
-);
+export const DictionaryContext = createContext<DictionaryContextType | null>(null);
 
 export const DictionaryProvider = ({
   children,
   initialWord,
   delay = 500,
+  cacheLimit,
+  cacheKey,
 }: DictionaryProviderProps) => {
   const [word, setWord] = useState(initialWord ?? "");
   const [data, setData] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [initPage, setInitPage] = useState(false);
+
+  cacheKey = cacheKey ?? "dictionary-cache";
+  cacheLimit = cacheLimit ?? 150;
+  const cache = useRef(new LocalStorageCache({ key: cacheKey, limit: cacheLimit })).current;
 
   useDebouncedEffect(
     async () => {
@@ -45,11 +51,11 @@ export const DictionaryProvider = ({
         }
         const controller = new AbortController();
 
+        setLoading(true);
         try {
-          const res = await fetch(
-            `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
-            { signal: controller.signal },
-          );
+          const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`, {
+            signal: controller.signal,
+          });
           const data = (await res.json())[0];
 
           if (data) {
@@ -83,9 +89,5 @@ export const DictionaryProvider = ({
     error,
   };
 
-  return (
-    <DictionaryContext.Provider value={value}>
-      {children}
-    </DictionaryContext.Provider>
-  );
+  return <DictionaryContext.Provider value={value}>{children}</DictionaryContext.Provider>;
 };

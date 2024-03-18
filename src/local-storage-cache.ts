@@ -1,9 +1,14 @@
-class LocalStorageCache {
+type StorageOpts = {
+  key: string;
+  limit: number;
+};
+
+export default class LocalStorageCache {
   key: string;
   limit: number;
   cache: Map<string, any>;
 
-  constructor(key: string, limit: number) {
+  constructor({ key, limit }: StorageOpts) {
     this.key = key;
     this.limit = limit;
     const stored = localStorage.getItem(key);
@@ -13,16 +18,14 @@ class LocalStorageCache {
 
   push(word: string, data: any) {
     if (this.cache.has(word)) return;
+
     this.cache.set(word, data);
     if (this.cache.size > this.limit) {
       const firstKey = this.cache.keys().next().value;
       this.cache.delete(firstKey);
     }
 
-    localStorage.setItem(
-      this.key,
-      JSON.stringify(Array.from(this.cache.entries())),
-    );
+    localStorage.setItem(this.key, JSON.stringify(Array.from(this.cache.entries())));
   }
 
   get(word?: string) {
@@ -33,5 +36,3 @@ class LocalStorageCache {
     localStorage.removeItem(this.key);
   }
 }
-
-export const cache = new LocalStorageCache("cache", 2);
