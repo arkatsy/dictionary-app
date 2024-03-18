@@ -2,6 +2,7 @@ import { ThemeProvider } from "./theme-provider";
 import { Header } from "./header";
 import { DictionaryProvider } from "./dictionary-provider";
 import Searchbar from "./search";
+import { useDictionary } from "./use-dictionary";
 
 export default function App() {
   const url = new URL(window.location.href);
@@ -21,7 +22,15 @@ export default function App() {
 }
 
 function Content() {
-  return <div>Body</div>;
+  const { loading, error, data, initPage } = useDictionary();
+
+  if (loading) return <div>Loading...</div>;
+
+  if (error) return <div>Error: {error}</div>;
+
+  if (initPage) return <div>Search for a word</div>;
+
+  return <div>{JSON.stringify(data)}</div>;
 }
 
 function Layout({ children }: { children: React.ReactNode }) {

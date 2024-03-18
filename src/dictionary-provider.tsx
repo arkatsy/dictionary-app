@@ -5,6 +5,7 @@ import { cache } from "./lib";
 type DictionaryContextType = {
   word: string;
   setWord: (word: string) => void;
+  initPage: boolean;
   data: unknown;
   loading: boolean;
   error: string | null;
@@ -16,7 +17,9 @@ type DictionaryProviderProps = {
   delay?: number;
 };
 
-export const DictionaryContext = createContext<DictionaryContextType | null>(null);
+export const DictionaryContext = createContext<DictionaryContextType | null>(
+  null,
+);
 
 export const DictionaryProvider = ({
   children,
@@ -25,22 +28,24 @@ export const DictionaryProvider = ({
 }: DictionaryProviderProps) => {
   const [word, setWord] = useState(initialWord ?? "");
   const [data, setData] = useState<unknown>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initPage, setInitPage] = useState(false);
 
   useDebouncedEffect(
     async () => {
       if (word) {
+        setInitPage(false);
         const cached = cache.get(word);
 
         if (cached) {
+          setLoading(false);
           setData(cached);
           return;
         }
         const controller = new AbortController();
 
         try {
-          setLoading(true);
           const res = await fetch(
             `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
             { signal: controller.signal },
@@ -60,6 +65,9 @@ export const DictionaryProvider = ({
         }
 
         return () => controller.abort();
+      } else {
+        setLoading(false);
+        setInitPage(true);
       }
     },
     [word],
@@ -69,6 +77,7 @@ export const DictionaryProvider = ({
   const value = {
     word,
     setWord,
+    initPage,
     data,
     loading,
     error,
