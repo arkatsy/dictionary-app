@@ -18,7 +18,7 @@ export default function Searchbar() {
     const params = new URLSearchParams(window.location.search);
     params.set("word", word);
 
-    window.history.replaceState({}, "", `search?${params}`);
+    window.history.replaceState({}, "", `?${params}`);
   };
 
   return (
