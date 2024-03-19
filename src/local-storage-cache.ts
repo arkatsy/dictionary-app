@@ -32,6 +32,10 @@ export default class LocalStorageCache {
     return word ? this.cache.get(word) : null;
   }
 
+  getAll() {
+    return Array.from(this.cache.values());
+  }
+
   clear() {
     localStorage.removeItem(this.key);
   }

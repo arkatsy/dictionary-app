@@ -2,11 +2,25 @@ import { createContext, useRef, useState } from "react";
 import { useDebouncedEffect } from "./use-debounced-effect";
 import LocalStorageCache from "./local-storage-cache";
 
+type Data = {
+  word: string;
+  sourceUrls: string[];
+  phonetics: { text: string; audio: string }[];
+  phonetic: string;
+  meanings: {
+    partOfSpeech: string;
+    definitions: { definition: string; antonyms: string[]; synonyms: string[] }[];
+    antonyms: string[];
+    synonyms: string[];
+  }[];
+  license: { name: string; url: string };
+};
+
 type DictionaryContextType = {
   word: string;
   setWord: (word: string) => void;
   initPage: boolean;
-  data: unknown;
+  data: Data;
   loading: boolean;
   error: string | null;
 };
@@ -21,6 +35,8 @@ type DictionaryProviderProps = {
 
 export const DictionaryContext = createContext<DictionaryContextType | null>(null);
 
+// TODO: Use useReducer
+// TODO: Provide different errors for no data found and API error
 export const DictionaryProvider = ({
   children,
   initialWord,
@@ -29,7 +45,7 @@ export const DictionaryProvider = ({
   cacheKey,
 }: DictionaryProviderProps) => {
   const [word, setWord] = useState(initialWord ?? "");
-  const [data, setData] = useState<unknown>(null);
+  const [data, setData] = useState<Data>(null as unknown as Data);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [initPage, setInitPage] = useState(false);
@@ -47,6 +63,7 @@ export const DictionaryProvider = ({
         if (cached) {
           setLoading(false);
           setData(cached);
+          setError(null);
           return;
         }
         const controller = new AbortController();
@@ -61,8 +78,9 @@ export const DictionaryProvider = ({
           if (data) {
             cache.push(word, data);
             setData(data);
+            setError(null);
           } else {
-            setError("No data found");
+            setError(`Could not find the word "${word}"`);
           }
         } catch (error) {
           setError("Something went wrong");
@@ -72,6 +90,7 @@ export const DictionaryProvider = ({
 
         return () => controller.abort();
       } else {
+        setError(null);
         setLoading(false);
         setInitPage(true);
       }
