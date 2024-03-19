@@ -49,7 +49,7 @@ export default function Content() {
         {audioSrc && (
           <button
             onClick={playPhonetic}
-            className="grid size-16 place-items-center rounded-full bg-violet-800"
+            className="grid size-16 place-items-center rounded-full bg-violet-200 dark:bg-violet-800"
           >
             {playing ? <PauseIcon /> : <PlayIcon />}
             <audio ref={audioRef} src={audioSrc} onEnded={() => setPlaying(false)}></audio>
@@ -130,7 +130,7 @@ function PlayIcon() {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className="size-8 fill-current text-violet-800 dark:text-violet-300"
+      className="size-8 fill-current text-violet-700 dark:text-violet-300"
     >
       <path
         strokeLinecap="round"
@@ -148,7 +148,7 @@ function PauseIcon() {
       viewBox="0 0 24 24"
       strokeWidth={4}
       stroke="currentColor"
-      className="size-8 fill-current text-violet-800 dark:text-violet-300"
+      className="size-8 fill-current text-violet-700 dark:text-violet-300"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
     </svg>
