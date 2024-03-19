@@ -4,6 +4,6 @@
 
 @layer base {
   body {
-    @apply bg-white text-zinc-950 dark:bg-zinc-900 dark:text-zinc-50;
+    @apply bg-white text-zinc-950 dark:bg-zinc-900 dark:text-zinc-50 font-serif;
   }
 }
