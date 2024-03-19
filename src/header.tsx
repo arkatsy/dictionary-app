@@ -5,7 +5,9 @@ import { useTheme } from "./use-theme";
 export function Header() {
   return (
     <div className="flex justify-between">
-      <Logo />
+      <a href="/">
+        <Logo />
+      </a>
       <ThemeToggle className="p-1 text-4xl text-yellow-400 dark:text-violet-500" />
     </div>
   );
@@ -48,12 +50,6 @@ function ThemeToggle(props: {
 
   return (
     /* @ts-ignore */
-    <Expand
-      {...props}
-      placeholder=""
-      duration={350}
-      toggled={toggled}
-      onToggle={onToggle}
-    />
+    <Expand {...props} placeholder="" duration={350} toggled={toggled} onToggle={onToggle} />
   );
 }
