@@ -16,6 +16,7 @@ export default function Content() {
     );
 
   // TODO: Differentiate between an API error and word not found error. (see dictionary-provider.tsx)
+  // TODO: Beautify error message
   if (error) return <div>{error}</div>;
 
   if (initPage)
@@ -61,7 +62,7 @@ export default function Content() {
           </button>
         )}
       </div>
-      {meanings.map(({ partOfSpeech, definitions }, idx) => (
+      {meanings.map(({ partOfSpeech, definitions, antonyms, synonyms }, idx) => (
         <div key={idx} className="flex flex-col gap-6">
           <div className="flex items-center gap-6">
             <p className="text-xl font-bold">{partOfSpeech}</p>
@@ -77,6 +78,30 @@ export default function Content() {
               ))}
             </ul>
           </div>
+          {synonyms.length > 0 && (
+            <div className="flex flex-col flex-wrap gap-5">
+              <h3 className="cursor-default text-lg text-zinc-500">Synonyms</h3>
+              <ul className="flex flex-wrap gap-4">
+                {synonyms.map((item, idx) => (
+                  <li key={idx} className="text-violet-500 underline underline-offset-2 dark:text-violet-400">
+                    <a href={location.origin + location.pathname + "?word=" + item}>{item}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {antonyms.length > 0 && (
+            <div className="flex flex-col flex-wrap gap-5">
+              <h3 className="cursor-default text-lg text-zinc-500">Antonyms</h3>
+              <ul className="flex flex-wrap gap-4">
+                {antonyms.map((item, idx) => (
+                  <li key={idx} className="text-violet-500 underline underline-offset-2 dark:text-violet-400">
+                    <a href={location.origin + location.pathname + "?word=" + item}>{item}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       ))}
       <div className="flex flex-col gap-4">
